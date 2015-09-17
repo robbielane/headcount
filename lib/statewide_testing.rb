@@ -1,5 +1,8 @@
 require_relative 'statewide_testing_loader'
 
+class UnknownDataError < StandardError
+end
+
 class StatewideTesting
   def initialize(name)
     @name = name
@@ -32,8 +35,9 @@ class StatewideTesting
   end
 
   def proficient_by_race_or_ethnicity(race)
+    race = race.to_sym
     races = [:asian, :black, :pacific_islander, :hispanic, :native_american, :two_or_more, :white]
-    raise UnknownDataError if !races.include?(race) 
+    raise UnknownDataError if !races.include?(race)
 
     math = StatewideTestingLoader.load_average_math_prof_by_race
     reading = StatewideTestingLoader.load_average_reading_prof_by_race

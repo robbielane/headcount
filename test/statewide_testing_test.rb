@@ -27,10 +27,9 @@ class StatewideTestingTest < Minitest::Test
   end
 
   def test_it_raises_error_if_race_input_is_false
-    skip
     example = StatewideTesting.new("ACADEMY 20")
 
-    assert_raise "UnknownDataError" , { example.proficient_by_race_or_ethnicity(:jack) }
+    assert_raise UnknownDataError, example.proficient_by_race_or_ethnicity(:jack)
   end
 
   def test_porficient_for_subject_by_grade_in_year_returns_data
@@ -42,6 +41,6 @@ class StatewideTestingTest < Minitest::Test
   def test_proficient_for_subject_by_race_in_year_returns_data_specific_to_subject_race_and_year
     example = StatewideTesting.new('ACADEMY 20')
 
-    assert_equal 0.8 , example.proficient_for_subject_by_race_in_year(:writing, "asian", 2011)
+    assert_equal 0.826 , example.proficient_for_subject_by_race_in_year(:writing, "asian", 2011)
   end
 end
