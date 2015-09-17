@@ -27,10 +27,9 @@ class StatewideTestingTest < Minitest::Test
   end
 
   def test_it_raises_error_if_race_input_is_false
-    skip
     example = StatewideTesting.new("ACADEMY 20")
 
-    assert_raise UnknownDataError, example.proficient_by_race_or_ethnicity(:jack)
+    assert_raises UnknownDataError do example.proficient_by_race_or_ethnicity(:jack) end
   end
 
   def test_porficient_for_subject_by_grade_in_year_returns_data
