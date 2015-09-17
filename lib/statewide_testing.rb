@@ -32,6 +32,9 @@ class StatewideTesting
   end
 
   def proficient_by_race_or_ethnicity(race)
+    races = [:asian, :black, :pacific_islander, :hispanic, :native_american, :two_or_more, :white]
+    raise UnknownDataError if !races.include?(race) 
+
     math = StatewideTestingLoader.load_average_math_prof_by_race
     reading = StatewideTestingLoader.load_average_reading_prof_by_race
     writing = StatewideTestingLoader.load_average_writing_prof_by_race
