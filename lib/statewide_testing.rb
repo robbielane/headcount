@@ -72,6 +72,3 @@ class StatewideTesting
     data_by_race[year][subject]
   end
 end
-
-
-StatewideTesting.new('ACADEMY 20').proficient_for_subject_by_race_in_year(:writing, "asian", 2011)
