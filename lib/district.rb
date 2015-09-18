@@ -15,4 +15,8 @@ class District
   def enrollment
     Enrollment.new(@name)
   end
+
+  def economic_profile
+    EconomicProfile.new(@name)
+  end
 end
