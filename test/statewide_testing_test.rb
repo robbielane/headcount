@@ -16,7 +16,7 @@ class StatewideTestingTest < Minitest::Test
               2014=>{:math=>0.834, :reading=>0.831, :writing=>0.639}}
 
     assert_equal result, example.proficient_by_grade(3)
-    assert_raises { example.proficient_by_grade(5) }
+    assert_raises UnknownDataError do example.proficient_by_grade(5) end
   end
 
   def test_proficient_by_race_returns_formatted_hash_for_given_race
