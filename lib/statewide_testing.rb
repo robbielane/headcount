@@ -1,4 +1,6 @@
 require_relative 'statewide_testing_loader'
+require 'pry'
+
 
 class UnknownDataError < StandardError
 end
@@ -74,4 +76,4 @@ class StatewideTesting
 end
 
 
-StatewideTesting.new('ACADEMY 20').proficient_for_subject_by_race_in_year(:writing, "asian", 2011)
+StatewideTesting.new('ACADEMY 20').proficient_by_race_or_ethnicity(:asian)
