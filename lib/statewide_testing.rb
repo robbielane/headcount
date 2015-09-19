@@ -29,37 +29,48 @@ class StatewideTesting
     else
       raise UnknownDataError
     end
-
-    results = data.select { |row| row if row[:location] == @name }
-        .group_by { |r| r[:timeframe] }
-        .map { |k,v| {k.to_i => v.map { |k| {k[:score].downcase.to_sym=>k[:data][0..4].to_f} } } }
-    format_results(results)
+    formatted_hash_of_results(data)
   end
 
-  def format_results(results)
+  def formatted_hash_of_results(data)
+    results = data.select { |row| row if row[:location] == @name }
+        .group_by { |r| r[:timeframe] }
+        .map { |k,v| {k.to_i => v.map { |k| {k[:score].downcase.to_sym=>k.fetch(:data)[0..4].to_f} } } }
+    merge_data_to_format_results(results)
+  end
+
+  def merge_data_to_format_results(results)
     formatted_result = {}
     results.each_with_index do |element, index|
-      results[index].each do |k,v|
-        formatted_result[k] = v[0].merge(v[1]).merge(v[2])
-      end
+      results[index].each { |k,v| formatted_result[k] = v.fetch(0).merge(v.fetch(1)).merge(v.fetch(2)) }
     end
     formatted_result
   end
 
   def proficient_by_race_or_ethnicity(race)
     raise UnknownDataError unless RACES.keys.include?(race)
+    results = Hash.new
+    formatted_results = Hash.new
 
+    load_data_and_find_by_district_and_race_for_each_subject(results, race)
+    format_a_hash_within_a_hash_for_data_display(results, formatted_results)
+    formatted_results
+  end
+
+  def load_data_and_find_by_district_and_race_for_each_subject(results, race)
     math = StatewideTestingLoader.load_average_math_prof_by_race
     reading = StatewideTestingLoader.load_average_reading_prof_by_race
     writing = StatewideTestingLoader.load_average_writing_prof_by_race
 
-    results = Hash.new
-    results[:math] = math.select { |row| row if row[:location] == @name && row[:race_ethnicity] == RACES.fetch(race) }
-    results[:reading] = reading.select { |row| row if row[:location] == @name && row[:race_ethnicity] == RACES.fetch(race) }
-    results[:writing] = writing.select { |row| row if row[:location] == @name && row[:race_ethnicity] == RACES.fetch(race) }
+    results[:math] = math.select { |row| row if row.fetch(:location) == @name &&
+                                                row.fetch(:race_ethnicity) == RACES.fetch(race) }
+    results[:reading] = reading.select { |row| row if row.fetch(:location) == @name &&
+                                                      row.fetch(:race_ethnicity) == RACES.fetch(race) }
+    results[:writing] = writing.select { |row| row if row.fetch(:location) == @name &&
+                                                      row.fetch(:race_ethnicity) == RACES.fetch(race) }
+  end
 
-    formatted_results = Hash.new
-
+  def format_a_hash_within_a_hash_for_data_display(results, formatted_results)
     results.each do |result_type, result_data|
       result_data.each do |row|
         timeframe = row[:timeframe].to_i
@@ -67,7 +78,6 @@ class StatewideTesting
         formatted_results[timeframe][result_type] = row[:data][0..4].to_f
       end
     end
-    formatted_results
   end
 
   def proficient_for_subject_by_grade_in_year(subject, grade, year)
@@ -86,7 +96,5 @@ class StatewideTesting
     data_by_race[year][subject]
   end
 end
-
-
 
 StatewideTesting.new('ACADEMY 20').proficient_by_race_or_ethnicity(:asian)
