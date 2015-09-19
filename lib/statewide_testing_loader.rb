@@ -1,5 +1,4 @@
 require 'csv'
-require 'pry'
 
 class StatewideTestingLoader
   def self.load_proficient_grade_three
