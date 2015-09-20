@@ -33,7 +33,14 @@ class DistrictRepository
       district if district.include?(name.upcase)
     end
   end
+
+  def find_all_districts
+    all_districts = []
+    @districts.each { |district| all_districts << District.new(district) }
+    all_districts
+  end
 end
 
 dr = DistrictRepository.new
 dr.load('./data')
+dr.find_all_districts
