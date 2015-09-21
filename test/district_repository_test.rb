@@ -3,7 +3,7 @@ require_relative '../lib/district_repository'
 class DistrictRepositoryTest < Minitest::Test
   def setup
     @dr = DistrictRepository.new
-    @dr.load('./data')
+    @dr.from_csv('./data')
   end
 
   def test_find_by_name

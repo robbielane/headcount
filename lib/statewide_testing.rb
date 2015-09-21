@@ -1,6 +1,5 @@
-require_relative 'statewide_testing_loader'
+require_relative 'loader'
 require 'pry'
-
 
 class UnknownDataError < StandardError
 end
@@ -17,15 +16,16 @@ class StatewideTesting
   SUBJECTS = [:math, :reading, :writing]
   GRADES = [3, 8]
 
-
-  def initialize(name)
+  attr_reader :loader, :name
+  def initialize(name, loader=Loader)
     @name = name
+    @loader = loader
   end
 
   def proficient_by_grade(grade)
     case grade
-    when 3 then data = StatewideTestingLoader.load_proficient_grade_three
-    when 8 then data = StatewideTestingLoader.load_proficient_grade_eight
+    when 3 then data = loader.load_proficient_grade_three
+    when 8 then data = loader.load_proficient_grade_eight
     else
       raise UnknownDataError
     end
@@ -64,9 +64,9 @@ class StatewideTesting
   end
 
   def load_data_and_find_by_district_and_race_for_each_subject(results, race)
-    math = StatewideTestingLoader.load_average_math_prof_by_race
-    reading = StatewideTestingLoader.load_average_reading_prof_by_race
-    writing = StatewideTestingLoader.load_average_writing_prof_by_race
+    math = loader.load_average_math_prof_by_race
+    reading = loader.load_average_reading_prof_by_race
+    writing = loader.load_average_writing_prof_by_race
 
     results[:math] = math.select { |row| row if row.fetch(:location) == @name &&
                                                 row.fetch(:race_ethnicity) == RACES.fetch(race) }
@@ -102,5 +102,3 @@ class StatewideTesting
     data_by_race[year][subject]
   end
 end
-
-StatewideTesting.new('ACADEMY 20').proficient_by_race_or_ethnicity(:asian)

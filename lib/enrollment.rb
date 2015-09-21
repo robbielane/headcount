@@ -1,4 +1,4 @@
-require_relative 'enrollment_loader'
+require_relative 'loader'
 
 class UnknownRaceError < StandardError
 end
@@ -20,8 +20,11 @@ class Enrollment
                        two_or_more: "Two or more races",
                        white: "White Students"}
 
-  def initialize(name)
+  attr_reader :loader, :name
+
+  def initialize(name, loader=Loader)
     @name = name
+    @loader = loader
   end
 
   def retrieve_data_from_first_row_unless_empty(selected_rows)
@@ -46,7 +49,7 @@ class Enrollment
   end
 
   def dropout_rate_in_year(year)
-    data = EnrollmentLoader.load_dropout_rates_by_race
+    data = loader.load_dropout_rates_by_race
     selected_rows = data.select { |row| row if row.fetch(:location) == @name &&
                                                row.fetch(:timeframe).to_i == year &&
                                                row.fetch(:category) == "All Students"}
@@ -54,7 +57,7 @@ class Enrollment
   end
 
   def dropout_rate_by_gender_in_year(year)
-    data = EnrollmentLoader.load_dropout_rates_by_race
+    data = loader.load_dropout_rates_by_race
     selected_rows = data.select { |row| row if row.fetch(:location) == @name &&
                                                row.fetch(:timeframe).to_i == year &&
                                               (row.fetch(:category) == "Male Students" ||
@@ -77,7 +80,7 @@ class Enrollment
   end
 
   def dropout_rate_by_race_in_year(year)
-    data = EnrollmentLoader.load_dropout_rates_by_race
+    data = loader.load_dropout_rates_by_race
     exclude = ["All Students", "Male Students", "Female Students"]
     selected_rows = data.select { |row| row if row.fetch(:location) == @name &&
                                                row.fetch(:timeframe).to_i == year &&
@@ -90,7 +93,7 @@ class Enrollment
 
   def dropout_rate_for_race_or_ethnicity(race)
     raise UnknownRaceError unless RACES_FOR_DROPOUT.keys.include?(race.to_sym)
-    data = EnrollmentLoader.load_dropout_rates_by_race
+    data = loader.load_dropout_rates_by_race
     selected_rows = data.select { |row| row if row.fetch(:location) == @name &&
                                                row.fetch(:category) == RACES_FOR_DROPOUT.fetch(race) }
     formatted_results_by_year_and_data(selected_rows)
@@ -98,7 +101,7 @@ class Enrollment
 
   def dropout_rate_for_race_or_ethnicity_in_year(race, year)
     raise UnknownRaceError unless RACES_FOR_DROPOUT.keys.include?(race.to_sym)
-    data = EnrollmentLoader.load_dropout_rates_by_race
+    data = loader.load_dropout_rates_by_race
     selected_rows = data.select { |row| row if row.fetch(:location) == @name &&
                                                row.fetch(:timeframe).to_i == year &&
                                                row.fetch(:category) == RACES_FOR_DROPOUT.fetch(race) }
@@ -106,48 +109,48 @@ class Enrollment
   end
 
   def graduation_rate_by_year
-    data = EnrollmentLoader.load_high_school_graduation_rates
+    data = loader.load_high_school_graduation_rates
     selected_by_district_and_formatted_by_year_and_data(data)
   end
 
   def graduation_rate_in_year(year)
-    data = EnrollmentLoader.load_high_school_graduation_rates
+    data = loader.load_high_school_graduation_rates
     select_by_district_and_year(data, year)
   end
 
   def kindergarten_participation_by_year
-    data = EnrollmentLoader.load_kidergartners_in_full_day_program
+    data = loader.load_kidergartners_in_full_day_program
     selected_by_district_and_formatted_by_year_and_data(data)
   end
 
   def kindergarten_participation_in_year(year)
-    data = EnrollmentLoader.load_kidergartners_in_full_day_program
+    data = loader.load_kidergartners_in_full_day_program
     select_by_district_and_year(data, year)
   end
 
   def online_participation_by_year
-    data = EnrollmentLoader.load_online_pupil_enrollment
+    data = loader.load_online_pupil_enrollment
     selected_by_district_and_formatted_by_year_and_data(data)
   end
 
   def online_participation_in_year(year)
-    data = EnrollmentLoader.load_online_pupil_enrollment
+    data = loader.load_online_pupil_enrollment
     select_by_district_and_year(data, year)
   end
 
   def participation_by_year
-    data = EnrollmentLoader.load_pupil_enrollment
+    data = loader.load_pupil_enrollment
     selected_by_district_and_formatted_by_year_and_data(data)
   end
 
   def participation_in_year(year)
-    data = EnrollmentLoader.load_pupil_enrollment
+    data = loader.load_pupil_enrollment
     select_by_district_and_year(data, year)
   end
 
   def participation_by_race_or_ethnicity(race)
     raise UnknownRaceError unless RACES_FOR_PARTICI.keys.include?(race.to_sym)
-    data = EnrollmentLoader.load_pupil_enrollment_by_race_ethnicity
+    data = loader.load_pupil_enrollment_by_race_ethnicity
     selected_rows = data.select { |row| row if row.fetch(:location) == @name &&
                                                row.fetch(:race) == RACES_FOR_PARTICI.fetch(race) &&
                                                row.fetch(:dataformat) == "Percent" }
@@ -155,7 +158,7 @@ class Enrollment
   end
 
   def participation_by_race_or_ethnicity_in_year(year)
-    data = EnrollmentLoader.load_pupil_enrollment_by_race_ethnicity
+    data = loader.load_pupil_enrollment_by_race_ethnicity
     selected_rows = data.select { |row| row if row.fetch(:location) == @name &&
                                                row.fetch(:timeframe).to_i == year &&
                                                row.fetch(:dataformat) == "Percent" &&
@@ -167,12 +170,12 @@ class Enrollment
   end
 
   def special_education_by_year
-    data = EnrollmentLoader.load_special_education
+    data = loader.load_special_education
     selected_by_district_and_formatted_by_year_and_data(data)
   end
 
   def special_education_in_year(year)
-    data = EnrollmentLoader.load_special_education
+    data = loader.load_special_education
     selected_rows = data.select { |row| row if row.fetch(:location) == @name &&
                                         row.fetch(:timeframe).to_i == year &&
                                         row.fetch(:dataformat) == "Percent" }
@@ -180,12 +183,12 @@ class Enrollment
   end
 
   def remediation_by_year
-    data = EnrollmentLoader.load_remediation_in_higher_education
+    data = loader.load_remediation_in_higher_education
     selected_by_district_and_formatted_by_year_and_data(data)
   end
 
   def remediation_in_year(year)
-    data = EnrollmentLoader.load_remediation_in_higher_education
+    data = loader.load_remediation_in_higher_education
     select_by_district_and_year(data, year)
   end
 
