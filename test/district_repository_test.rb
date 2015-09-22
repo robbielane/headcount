@@ -2,8 +2,7 @@ require_relative '../lib/district_repository'
 
 class DistrictRepositoryTest < Minitest::Test
   def setup
-    @dr = DistrictRepository.new
-    @dr.from_csv('./data')
+    @dr = DistrictRepository.from_csv("./data")
   end
 
   def test_find_by_name
@@ -15,7 +14,8 @@ class DistrictRepositoryTest < Minitest::Test
   end
 
   def test_find_all_matching
-    assert_equal ["DENVER COUNTY 1", "HAYDEN RE-1"], @dr.find_all_matching('den')
+    assert_equal ["DENVER COUNTY 1", "HAYDEN RE-1"],
+    @dr.find_all_matching('den').map { |district| district.name }.sort
   end
 
   def test_find_all_matching_returns_empty_array_when_none_match

@@ -43,4 +43,9 @@ class StatewideTestingTest < Minitest::Test
     assert_raises UnknownDataError do example.proficient_for_subject_by_race_in_year(:reading, :green, 2011) end
     assert_raises UnknownDataError do example.proficient_for_subject_by_race_in_year(:history, :black, 2011) end
   end
+
+  def test_proficient_for_subject_in_year
+    assert_equal 0.680, example.proficient_for_subject_in_year(:math, 2011)
+    assert_equal 0.689, example.proficient_for_subject_in_year(:math, 2012)
+  end
 end

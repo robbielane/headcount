@@ -87,18 +87,40 @@ class StatewideTesting
   end
 
   def proficient_for_subject_by_grade_in_year(subject, grade, year)
-    #raise UnknownDataError if year not included in data.
-    raise UnknownDataError unless SUBJECTS.include?(subject) && GRADES.include?(grade)
     data = proficient_by_grade(grade)
+    raise UnknownDataError unless SUBJECTS.include?(subject) && GRADES.include?(grade) && year_in_data?(data, year)
     data_for_year = data.select { |k,v| v if k == year}
     data_for_year[year][subject]
   end
 
   def proficient_for_subject_by_race_in_year(subject, race, year)
-    #raise UnknownDataError if year not included in data.
-    raise UnknownDataError unless SUBJECTS.include?(subject) && RACES.keys.include?(race)
     data = proficient_by_race_or_ethnicity(race)
+    raise UnknownDataError unless SUBJECTS.include?(subject) && RACES.keys.include?(race) && year_in_data?(data, year)
     data_by_race = data.select { |k,v| v if k == year}
     data_by_race[year][subject]
+  end
+
+  def proficient_for_subject_in_year(subject, year)
+    data = Hash.new
+    data[:math] = loader.load_average_math_prof_by_race
+    data[:reading] = loader.load_average_reading_prof_by_race
+    data[:writing] = loader.load_average_writing_prof_by_race
+
+    raise UnknownDataError unless SUBJECTS.include?(subject) && year_in_raw_data?(data.fetch(subject), year)
+
+    selected_rows = data.fetch(subject).select { |row| row[:location] == @name &&
+                                                       row[:race_ethnicity] == "All Students" &&
+                                                       row[:timeframe].to_i == year }
+    selected_rows[0][:data][0..4].to_f
+  end
+
+  def year_in_data?(data, year)
+    years = data.keys
+    years.include?(year)
+  end
+
+  def year_in_raw_data?(data, year)
+    years = data.map { |row| row[:timeframe].to_i }.uniq
+    years.include?(year)
   end
 end
