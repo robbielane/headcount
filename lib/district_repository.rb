@@ -13,7 +13,7 @@ class DistrictRepository
   end
 
   def self.from_csv(dir)
-    csvs = Dir.glob(File.join(dir, '*'))
+    csvs = Dir.glob(File.join(dir, '*.csv'))
     csvs.each do |file|
       @districts = CSV.open(file, {headers: true, header_converters: :symbol})
                  .to_a.map {|row| row[:location] }
