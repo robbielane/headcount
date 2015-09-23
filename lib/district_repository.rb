@@ -1,25 +1,46 @@
 require 'csv'
+require 'json'
 require_relative 'district'
 require_relative 'loader'
 require 'pry'
+
+class JsonLoader
+  attr_reader :districts_data
+  def initialize(districts_data)
+    @districts_data = districts_data
+  end
+
+  def district_names
+    districts_data.map { |name, district_data| district_data.fetch :name }
+  end
+end
 
 
 class DistrictRepository
   attr_reader :districts
 
-  def initialize(data)
-    @districts = data
-    @loader = Loader
+  def initialize(district_names, loader)
+    @districts = district_names
+    @loader    = loader
   end
 
   def self.from_csv(dir)
-    csvs = Dir.glob(File.join(dir, '*.csv'))
+    csvs      = Dir.glob(File.join(dir, '*.csv'))
+    districts = []
     csvs.each do |file|
-      @districts = CSV.open(file, {headers: true, header_converters: :symbol})
-                 .to_a.map {|row| row[:location] }
-                 .uniq
+      districts = CSV.open(file, {headers: true, header_converters: :symbol})
+                     .to_a.map {|row| row[:location] }
+                     .uniq
     end
-    DistrictRepository.new(@districts)
+    DistrictRepository.new(districts, Loader)
+  end
+
+  def self.from_json(dir)
+    filename  = File.join(dir, "districts.json")
+    json      = File.read(filename)
+    districts = JSON.parse(json, symbolize_names: true)
+    loader    = JsonLoader.new(districts)
+    DistrictRepository.new(loader.district_names, loader)
   end
 
   def load(dir)

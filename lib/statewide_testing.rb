@@ -35,7 +35,7 @@ class StatewideTesting
   def formatted_hash_of_results(data)
     results = data.select { |row| row if row[:location] == @name }
         .group_by { |r| r[:timeframe] }
-        .map { |k,v| {k.to_i => v.map do |k|
+        .map { |k,v| {k => v.map do |k|
           if !k.fetch(:data).nil?
             {k[:score].downcase.to_sym => k.fetch(:data)[0..4].to_f}
           else
@@ -48,7 +48,16 @@ class StatewideTesting
   def merge_data_to_format_results(results)
     formatted_result = {}
     results.each_with_index do |element, index|
-      results[index].each { |k,v| formatted_result[k] = v.fetch(0).merge(v.fetch(1)).merge(v.fetch(2)) }
+      results[index].each do |k,v|
+        if v[1].nil?
+          formatted_result[k.to_i] = v[0]
+        else
+          until v[1].nil? do
+            formatted_result[k.to_i] = v[0].merge!(v[1])
+            v.delete(v[1])
+          end
+        end
+      end
     end
     formatted_result
   end

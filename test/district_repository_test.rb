@@ -2,7 +2,12 @@ require_relative '../lib/district_repository'
 
 class DistrictRepositoryTest < Minitest::Test
   def setup
-    @dr = DistrictRepository.from_csv("./data")
+    @dr = DistrictRepository.from_csv(data_dir)
+    #@dr = DistrictRepository.from_json(data_dir)
+  end
+
+  def data_dir
+    File.expand_path "../data", __dir__
   end
 
   def test_find_by_name
