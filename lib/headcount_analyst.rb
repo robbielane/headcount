@@ -50,15 +50,15 @@ SUBJECTS = [:math, :reading, :writing]
     if subject == :all
       SUBJECTS.each { |subject| retrieve_results(subject) }
     else
-      hash1 = {}
+      key = {}
       all_districts.each do |district|
         data_for_district = district.statewide_testing.proficient_by_grade(3)
-        hash2 = {}
+        value = {}
         data_for_district.each do |row|
-          hash2[row[0]] = row[1].fetch(subject) if row[1].keys.include?(subject)
+          value[row[0]] = row[1].fetch(subject) if row[1].keys.include?(subject)
         end
-        hash1[district.name] = hash2
-        @statewide_testing_results[subject] = hash1
+        key[district.name] = value
+        @statewide_testing_results[subject] = key
       end
     end
     @statewide_testing_results

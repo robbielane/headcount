@@ -1,10 +1,13 @@
 require_relative '../lib/enrollment'
-require_relative 'test_helper'
 require 'pry'
 
 class EnrollmentTest < Minitest::Test
   def example
-    TestHelper.dr.District.new('ACADEMY 20')
+    dr.find_by_name("ACADEMY 20").enrollment
+  end
+
+  def dr
+    DistrictRepository.from_csv("./data")
   end
 
   def test_dropout_rate_in_year_returns_data_for_given_year

@@ -2,7 +2,11 @@ require_relative '../lib/economic_profile'
 
 class EconomicProfileTest < Minitest::Test
   def example
-    EconomicProfile.new("ACADEMY 20")
+    dr.find_by_name("ACADEMY 20").economic_profile
+  end
+
+  def dr
+    DistrictRepository.from_csv("./data")
   end
 
   def test_free_or_reduced_lunch_by_year_returns_data_from_all_years

@@ -3,7 +3,11 @@ require 'pry'
 
 class StatewideTestingTest < Minitest::Test
   def example
-    example = StatewideTesting.new("ACADEMY 20")
+    dr.find_by_name("ACADEMY 20").statewide_testing
+  end
+
+  def dr
+    DistrictRepository.from_csv("./data")
   end
 
   def test_proficient_by_grade_returns_formatted_hash_for_given_grade
