@@ -1,5 +1,6 @@
 require_relative 'district_repository'
-
+class UnknownDataError < StandardError
+end
 class HeadcountAnalyst
 SUBJECTS = [:math, :reading, :writing]
 
@@ -27,7 +28,7 @@ SUBJECTS = [:math, :reading, :writing]
         averages << [district[0], district[1]]
       end
     end
-    binding.pry
+
   end
 
   def calculate_top_growth(args, data)
@@ -39,9 +40,10 @@ SUBJECTS = [:math, :reading, :writing]
   end
 
   def calculate_top(args, data)
-    data.max_by(args.fetch(:top)) { |district| district[1] }
+    data = data.max_by(args.fetch(:top)) { |district| district[1] }
         .map { |row| [row[0], row[1].to_s[0..4].to_f] }
-    data.flatten if args.fetch(:top) == 1
+    data = data.flatten if args.fetch(:top) == 1
+    data
   end
 
   def retrieve_results(subject)
@@ -62,5 +64,56 @@ SUBJECTS = [:math, :reading, :writing]
     @statewide_testing_results
   end
 
+  def kindergarten_participation_rate_variation(district_name, args)
+    #raise UnknownDataError unless all_districts.include?(district)
+    district = repository.find_by_name(district_name)
+    against = repository.find_by_name(args.fetch(:against))
+    district_average = find_average_of_kidergarten_rates(district)
+    against_average =  find_average_of_kidergarten_rates(against)
+    difference = district_average / against_average
+    difference.to_s[0..4].to_f
+  end
+
+  def kindergarten_participation_against_household_income(district_name)
+    state = repository.find_by_name("COLORADO")
+    district = repository.find_by_name(district_name)
+    state_average = calculate_median_income_average(state)
+    district_average = calculate_median_income_average(district)
+    difference = district_average / state_average.to_f
+    kindergarten_rate = kindergarten_participation_rate_variation(district_name, against: 'COLORADO')
+    variation = kindergarten_rate / difference
+    variation.to_s[0..4].to_f
+  end
+
+  def kindergarten_participation_correlates_with_household_income(args)
+    if args.fetch(:for).upcase == "COLORADO"
+      check_correlation_for_all_districts
+    else
+      household_income = kindergarten_participation_against_household_income(args.fetch(:for))
+      household_income > 0.6 && household_income < 1.5 ? true : false
+    end
+  end
+
+  def check_correlation_for_all_districts
+    disticts_correlate = []
+    all_districts.each_with_index do |district, index|
+      household_income = kindergarten_participation_against_household_income(district.name)
+      disticts_correlate << (household_income > 0.6 && household_income < 1.5) ? true : false
+    end
+
+    disticts_correlate.count > (all_districts.count * 0.7) ? false : true
+  end
+
+  def calculate_median_income_average(district)
+    data = district.economic_profile.median_household_income_by_year
+    return 1 if data.values.count == 0
+    total = data.values.reduce(0, :+) / data.values.count if data.values.count != 0
+  end
+
+  def find_average_of_kidergarten_rates(district)
+    data = district.enrollment.kindergarten_participation_by_year
+    return 1 if data.values.count == 0
+    total = (data.values.reduce(0, :+) / data.keys.count)
+  end
 
 end

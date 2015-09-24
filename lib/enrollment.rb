@@ -32,7 +32,7 @@ class Enrollment
   end
 
   def selected_by_district_and_formatted_by_year_and_data(data)
-    selected_rows = data.select { |row| row if row.fetch(:location) == @name }
+    selected_rows = data.select { |row| row if row.fetch(:location).upcase == @name }
     formatted_results_by_year_and_data(selected_rows)
   end
 

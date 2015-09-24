@@ -1,14 +1,13 @@
 require_relative '../lib/enrollment'
+require_relative 'test_helper'
 require 'pry'
 
 class EnrollmentTest < Minitest::Test
-
   def example
-    Enrollment.new("ACADEMY 20")
+    TestHelper.dr.District.new('ACADEMY 20')
   end
 
   def test_dropout_rate_in_year_returns_data_for_given_year
-
     assert_equal 0.002, example.dropout_rate_in_year(2011)
     assert_nil example.dropout_rate_in_year(3030)
   end

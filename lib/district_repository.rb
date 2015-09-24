@@ -32,7 +32,7 @@ class DistrictRepository
                      .to_a.map {|row| row[:location] }
                      .uniq
     end
-    DistrictRepository.new(districts, Loader.new)
+    DistrictRepository.new(districts, Loader.new(dir))
   end
 
   def self.from_json(dir)

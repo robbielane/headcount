@@ -65,4 +65,15 @@ class EconomicProfile
                                         row[:timeframe].to_i == year }
     selected_rows[0][:data][0..4].to_f unless selected_rows.empty?
   end
+
+  def median_household_income_by_year
+    data = loader.load_median_household_income
+    selected_rows = data.select { |row| row[:location].upcase == @name }
+
+    results = {}
+    selected_rows.each do |row|
+      results[row[:timeframe]] = row[:data].to_i
+    end
+    results
+  end
 end
