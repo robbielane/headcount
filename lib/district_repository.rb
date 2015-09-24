@@ -32,7 +32,7 @@ class DistrictRepository
                      .to_a.map {|row| row[:location] }
                      .uniq
     end
-    DistrictRepository.new(districts, Loader)
+    DistrictRepository.new(districts, Loader.new)
   end
 
   def self.from_json(dir)
@@ -42,17 +42,6 @@ class DistrictRepository
     loader    = JsonLoader.new(districts)
     DistrictRepository.new(loader.district_names, loader)
   end
-
-  def load(dir)
-    csvs = Dir.glob(File.join(dir, '*'))
-    csvs.each do |file|
-      @districts = CSV.open(file, {headers: true, header_converters: :symbol})
-                 .to_a.map {|row| row[:location] }
-                 .uniq
-    end
-  end
-
-
 
   def find_by_name(name)
     @districts.each do |potential_name|
