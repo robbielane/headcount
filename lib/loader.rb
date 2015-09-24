@@ -21,7 +21,7 @@ class Loader
 
   def load_kidergartners_in_full_day_program
     kindergartners_in_full_day_care = File.join(@dir, "/Kindergartners in full-day program.csv")
-    @kindergartners_in_full_day_care ||= map_csv_omit_zeros(kindergartners_in_full_day_care)
+    @kindergartners_in_full_day_care ||= map_csv(kindergartners_in_full_day_care)
   end
 
   def load_online_pupil_enrollment
