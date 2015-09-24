@@ -2,7 +2,6 @@ require 'csv'
 require 'json'
 require_relative 'district'
 require_relative 'loader'
-require 'pry'
 
 class JsonLoader
   attr_reader :districts_data

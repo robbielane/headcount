@@ -1,6 +1,6 @@
 require_relative 'district_repository'
-class UnknownDataError < StandardError
-end
+require_relative 'errors'
+
 class HeadcountAnalyst
 SUBJECTS = [:math, :reading, :writing]
 

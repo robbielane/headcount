@@ -1,8 +1,5 @@
 require_relative 'loader'
-require 'pry'
-
-class UnknownDataError < StandardError
-end
+require_relative 'errors'
 
 class StatewideTesting
   RACES = {asian: "Asian",

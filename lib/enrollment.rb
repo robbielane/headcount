@@ -1,7 +1,5 @@
 require_relative 'loader'
-
-class UnknownRaceError < StandardError
-end
+require_relative 'errors'
 
 class Enrollment
   RACES_FOR_DROPOUT = {asian: "Asian Students",
