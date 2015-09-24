@@ -8,14 +8,14 @@ SUBJECTS = [:math, :reading, :writing]
   def initialize(repo)
     @repository = repo
     @all_districts = @repository.find_all_districts
-    @statewide_testing_results ||= {:math=>{},:writing=>{},:reading=>{}, :all=>{}}
+    @statewide_testing_results ||= {}
     @district_growths = {}
   end
 
   def top_statewide_testing_year_over_year_growth_in_3rd_grade(args={:subject=>:all, :top=>1})
     args[:top] = 1 if !args.keys.include?(:top)
     args[:subject] = :all if !args.keys.include?(:subject)
-    data = retrieve_results(args.fetch(:subject))
+    data = retrieve_results_for_growth(args.fetch(:subject))
     growths = calculate_top_growth(args, data)
     growths = average_subjects() if args.fetch(:subject) == :all
     growths = calculate_top(args, growths)
@@ -46,28 +46,33 @@ SUBJECTS = [:math, :reading, :writing]
     data
   end
 
-  def retrieve_results(subject)
+  def retrieve_results_for_growth(subject)
     if subject == :all
-      SUBJECTS.each { |subject| retrieve_results(subject) }
+      SUBJECTS.each { |subject| retrieve_results_for_growth(subject) }
     else
-      key = {}
-      all_districts.each do |district|
-        data_for_district = district.statewide_testing.proficient_by_grade(3)
-        value = {}
-        data_for_district.each do |row|
-          value[row[0]] = row[1].fetch(subject) if row[1].keys.include?(subject)
-        end
-        key[district.name] = value
-        @statewide_testing_results[subject] = key
-      end
+      calculate_growth_results(subject)
     end
     @statewide_testing_results
   end
 
+  def calculate_growth_results(subject)
+    key = {}
+    all_districts.each do |district|
+      data_for_district = district.statewide_testing.proficient_by_grade(3)
+      value = {}
+      data_for_district.each do |row|
+        value[row[0]] = row[1].fetch(subject) if row[1].keys.include?(subject)
+      end
+      key[district.name] = value
+      @statewide_testing_results[subject] = key
+    end
+  end
+
   def kindergarten_participation_rate_variation(district_name, args)
-    #raise UnknownDataError unless all_districts.include?(district)
     district = repository.find_by_name(district_name)
+    raise UnknownDataError if district.nil?
     against = repository.find_by_name(args.fetch(:against))
+    raise UnknownDataError if against.nil?
     district_average = find_average_of_kidergarten_rates(district)
     against_average =  find_average_of_kidergarten_rates(against)
     difference = district_average / against_average

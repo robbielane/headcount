@@ -7,7 +7,7 @@ class EnrollmentTest < Minitest::Test
   end
 
   def dr
-    DistrictRepository.from_csv("./data")
+    dr ||= DistrictRepository.from_csv("./data")
   end
 
   def test_dropout_rate_in_year_returns_data_for_given_year

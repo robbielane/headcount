@@ -7,7 +7,7 @@ class StatewideTestingTest < Minitest::Test
   end
 
   def dr
-    DistrictRepository.from_csv("./data")
+    dr ||= DistrictRepository.from_csv("./data")
   end
 
   def test_proficient_by_grade_returns_formatted_hash_for_given_grade

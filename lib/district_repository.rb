@@ -45,7 +45,7 @@ class DistrictRepository
 
   def find_by_name(name)
     @districts.each do |potential_name|
-      if name.upcase == potential_name || name.capitalize == "Colorado"
+      if name.upcase == potential_name.upcase
         return District.new(potential_name, @loader)
       end
     end

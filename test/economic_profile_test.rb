@@ -6,7 +6,7 @@ class EconomicProfileTest < Minitest::Test
   end
 
   def dr
-    DistrictRepository.from_csv("./data")
+    @dr ||= DistrictRepository.from_csv("./data")
   end
 
   def test_free_or_reduced_lunch_by_year_returns_data_from_all_years
