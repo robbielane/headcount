@@ -2,7 +2,7 @@ require_relative 'loader'
 
 class EconomicProfile
   attr_reader :loader
-  def initialize(name, loader=Loader)
+  def initialize(name, loader)
     @name = name
     @loader = loader
   end
@@ -33,11 +33,7 @@ class EconomicProfile
     data = loader.load_school_aged_children_in_poverty
     selected_rows = data.select { |row| row[:location] == @name &&
                                         row[:dataformat] == "Percent"}
-    results = {}
-    selected_rows.each do |row|
-      results[row[:timeframe].to_i] = row[:data][0..4].to_f
-    end
-    results
+    formatted_results_by_year_and_data(selected_rows)
   end
 
   def school_aged_children_in_poverty_in_year(year)
@@ -69,11 +65,12 @@ class EconomicProfile
   def median_household_income_by_year
     data = loader.load_median_household_income
     selected_rows = data.select { |row| row[:location].upcase == @name }
+    formatted_results_by_year_and_data(selected_rows)
+  end
 
+  def formatted_results_by_year_and_data(selected_rows)
     results = {}
-    selected_rows.each do |row|
-      results[row[:timeframe]] = row[:data].to_i
-    end
+    selected_rows.each { |row| results[row.fetch(:timeframe).to_i] = row.fetch(:data)[0..4].to_f }
     results
   end
 end

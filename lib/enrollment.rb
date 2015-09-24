@@ -20,7 +20,7 @@ class Enrollment
 
   attr_reader :loader, :name
 
-  def initialize(name, loader=Loader)
+  def initialize(name, loader)
     @name = name
     @loader = loader
   end

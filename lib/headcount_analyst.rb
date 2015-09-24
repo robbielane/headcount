@@ -5,6 +5,7 @@ class HeadcountAnalyst
 SUBJECTS = [:math, :reading, :writing]
 
   attr_reader :all_districts, :repository
+
   def initialize(repo)
     @repository = repo
     @all_districts = @repository.find_all_districts
