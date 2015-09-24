@@ -1,25 +1,17 @@
 require_relative '../lib/enrollment'
-require 'pry'
+require_relative 'test_helper'
 
-class EnrollmentTest < Minitest::Test
-  def example
-    dr.find_by_name("ACADEMY 20").enrollment
-  end
-
-  def dr
-    dr ||= DistrictRepository.from_csv("./data")
-  end
-
+class EnrollmentTest < TestHelper
   def test_dropout_rate_in_year_returns_data_for_given_year
-    assert_equal 0.002, example.dropout_rate_in_year(2011)
-    assert_nil example.dropout_rate_in_year(3030)
+    assert_equal 0.002, example.enrollment.dropout_rate_in_year(2011)
+    assert_nil example.enrollment.dropout_rate_in_year(3030)
   end
 
   def test_dropout_rate_by_gender_in_year_returns_data_for_given_year
     expected_result = {:female => 0.002, :male => 0.002}
 
-    assert_equal expected_result, example.dropout_rate_by_gender_in_year(2011)
-    assert_nil example.dropout_rate_by_gender_in_year(3030)
+    assert_equal expected_result, example.enrollment.dropout_rate_by_gender_in_year(2011)
+    assert_nil example.enrollment.dropout_rate_by_gender_in_year(3030)
   end
 
   def test_dropout_rate_by_race_in_year_returns_hash_of_data_for_given_year
@@ -32,22 +24,22 @@ class EnrollmentTest < Minitest::Test
                        :white => 0.002}
 
 
-    assert_equal expected_result, example.dropout_rate_by_race_in_year(2011)
-    assert_nil example.dropout_rate_by_race_in_year(3030)
+    assert_equal expected_result, example.enrollment.dropout_rate_by_race_in_year(2011)
+    assert_nil example.enrollment.dropout_rate_by_race_in_year(3030)
   end
 
   def test_dropout_rate_for_race_or_ethnicity_returns_hash_of_years_and_data
     expected_result = {2011 => 0.000,
                        2012 => 0.007}
 
-    assert_equal expected_result, example.dropout_rate_for_race_or_ethnicity(:asian)
-    assert_raises UnknownRaceError do example.dropout_rate_for_race_or_ethnicity(:bob) end
+    assert_equal expected_result, example.enrollment.dropout_rate_for_race_or_ethnicity(:asian)
+    assert_raises UnknownRaceError do example.enrollment.dropout_rate_for_race_or_ethnicity(:bob) end
   end
 
   def test_dropout_rate_for_race_or_ethnicity_in_year_returns_data_for_given_year_and_ethnicity
-    assert_equal 0.006, example.dropout_rate_for_race_or_ethnicity_in_year(:hispanic, 2012)
-    assert_nil example.dropout_rate_for_race_or_ethnicity_in_year(:hispanic, 3030)
-    assert_raises UnknownRaceError do example.dropout_rate_for_race_or_ethnicity_in_year(:blue, 2012) end
+    assert_equal 0.006, example.enrollment.dropout_rate_for_race_or_ethnicity_in_year(:hispanic, 2012)
+    assert_nil example.enrollment.dropout_rate_for_race_or_ethnicity_in_year(:hispanic, 3030)
+    assert_raises UnknownRaceError do example.enrollment.dropout_rate_for_race_or_ethnicity_in_year(:blue, 2012) end
    end
 
   def test_graduation_rate_by_year_returns_hash_of_years_and_data
@@ -57,12 +49,12 @@ class EnrollmentTest < Minitest::Test
                        2013 => 0.913,
                        2014 => 0.898,
                        }
-    assert_equal expected_result, example.graduation_rate_by_year
+    assert_equal expected_result, example.enrollment.graduation_rate_by_year
   end
 
   def test_graduation_rate_in_year_returns_data_for_given_year
-    assert_equal 0.895, example.graduation_rate_in_year(2011)
-    assert_nil example.graduation_rate_in_year(3030)
+    assert_equal 0.895, example.enrollment.graduation_rate_in_year(2011)
+    assert_nil example.enrollment.graduation_rate_in_year(3030)
   end
 
   def test_kindergarten_participation_by_year_returns_hash_of_years_and_data
@@ -78,24 +70,24 @@ class EnrollmentTest < Minitest::Test
                        2013 =>0.487,
                        2014 =>0.490
                      }
-    assert_equal expected_result, example.kindergarten_participation_by_year
+    assert_equal expected_result, example.enrollment.kindergarten_participation_by_year
   end
 
   def test_kindergarten_participation_in_year_returns_data_for_given_year
-    assert_equal 0.478, example.kindergarten_participation_in_year(2012)
-    assert_nil example.kindergarten_participation_in_year(3030)
+    assert_equal 0.478, example.enrollment.kindergarten_participation_in_year(2012)
+    assert_nil example.enrollment.kindergarten_participation_in_year(3030)
   end
 
   def test_online_participation_by_year_returns_hash_of_year_and_data
     expected_result = {2011 => 33,
                        2012 => 35,
                        2013 => 341,}
-    assert_equal expected_result, example.online_participation_by_year
+    assert_equal expected_result, example.enrollment.online_participation_by_year
   end
 
   def test_online_participation_in_year_returns_data_for_given_year
-    assert_equal 341, example.online_participation_in_year(2013)
-    assert_nil example.online_participation_in_year(3030)
+    assert_equal 341, example.enrollment.online_participation_in_year(2013)
+    assert_nil example.enrollment.online_participation_in_year(3030)
   end
 
   def test_participation_by_year_returns_hash_of_year_and_data
@@ -105,12 +97,12 @@ class EnrollmentTest < Minitest::Test
                       2012 => 23973,
                       2013 => 24481,
                       2014 => 24578,}
-    assert_equal expected_result, example.participation_by_year
+    assert_equal expected_result, example.enrollment.participation_by_year
   end
 
   def test_participation_in_year_returns_data_for_given_year
-    assert_equal 23119, example.participation_in_year(2010)
-    assert_nil example.participation_in_year(3030)
+    assert_equal 23119, example.enrollment.participation_in_year(2010)
+    assert_nil example.enrollment.participation_in_year(3030)
   end
 
   def test_participation_by_race_or_ethnicity_returns_hash_of_year_and_data
@@ -122,8 +114,8 @@ class EnrollmentTest < Minitest::Test
                       2012 => 0.038,
                       2013 => 0.038,
                       2014 => 0.037}
-    assert_equal expected_result, example.participation_by_race_or_ethnicity(:asian)
-    assert_raises UnknownRaceError do example.participation_by_race_or_ethnicity(:joe) end
+    assert_equal expected_result, example.enrollment.participation_by_race_or_ethnicity(:asian)
+    assert_raises UnknownRaceError do example.enrollment.participation_by_race_or_ethnicity(:joe) end
   end
 
   def test_participation_by_race_or_ethnicity_in_year_returns_data_for_all_ethnicities_for_given_year
@@ -135,8 +127,8 @@ class EnrollmentTest < Minitest::Test
                       :two_or_more => 0.053,
                       :white => 0.75}
 
-    assert_equal expected_result, example.participation_by_race_or_ethnicity_in_year(2012)
-    assert_nil example.participation_by_race_or_ethnicity_in_year(3030)
+    assert_equal expected_result, example.enrollment.participation_by_race_or_ethnicity_in_year(2012)
+    assert_nil example.enrollment.participation_by_race_or_ethnicity_in_year(3030)
   end
 
 
@@ -148,12 +140,12 @@ class EnrollmentTest < Minitest::Test
                       2013 => 0.079,
                       2014 => 0.079,}
 
-    assert_equal expected_result, example.special_education_by_year
+    assert_equal expected_result, example.enrollment.special_education_by_year
   end
 
   def test_special_education_in_year_returns_data_for_given_year
-    assert_equal 0.078, example.special_education_in_year(2012)
-    assert_nil example.special_education_in_year(3030)
+    assert_equal 0.078, example.enrollment.special_education_in_year(2012)
+    assert_nil example.enrollment.special_education_in_year(3030)
   end
 
   def test_remediation_by_year_returns_hash_of_years_and_data
@@ -161,11 +153,11 @@ class EnrollmentTest < Minitest::Test
                        2010 => 0.294,
                        2011 => 0.263,}
 
-    assert_equal expected_result, example.remediation_by_year
+    assert_equal expected_result, example.enrollment.remediation_by_year
   end
 
   def test_remediation_in_year_returns_data_for_given_year
-    assert_equal 0.263, example.remediation_in_year(2011)
-    assert_nil example.remediation_in_year(3030)
+    assert_equal 0.263, example.enrollment.remediation_in_year(2011)
+    assert_nil example.enrollment.remediation_in_year(3030)
   end
 end

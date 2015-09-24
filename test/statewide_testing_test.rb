@@ -1,10 +1,7 @@
 require_relative '../lib/statewide_testing'
-require 'pry'
+require_relative 'test_helper'
 
-class StatewideTestingTest < Minitest::Test
-  def example
-    dr.find_by_name("ACADEMY 20").statewide_testing
-  end
+class StatewideTestingTest < TestHelper
 
   def dr
     dr ||= DistrictRepository.from_csv("./data")
@@ -19,8 +16,8 @@ class StatewideTestingTest < Minitest::Test
               2013=>{:math=>0.855, :reading=>0.859, :writing=>0.668},
               2014=>{:math=>0.834, :reading=>0.831, :writing=>0.639}}
 
-    assert_equal result, example.proficient_by_grade(3)
-    assert_raises UnknownDataError do example.proficient_by_grade(5) end
+    assert_equal result, example.statewide_testing.proficient_by_grade(3)
+    assert_raises UnknownDataError do example.statewide_testing.proficient_by_grade(5) end
   end
 
   def test_proficient_by_race_returns_formatted_hash_for_given_race
@@ -29,27 +26,27 @@ class StatewideTestingTest < Minitest::Test
               2013=>{:math=>0.805, :reading=>0.901, :writing=>0.81},
               2014=>{:math=>0.8, :reading=>0.855, :writing=>0.789}}
 
-    assert_equal result, example.proficient_by_race_or_ethnicity(:asian)
+    assert_equal result, example.statewide_testing.proficient_by_race_or_ethnicity(:asian)
   end
 
   def test_it_raises_error_if_race_input_is_false
-    assert_raises UnknownDataError do example.proficient_by_race_or_ethnicity(:jack) end
+    assert_raises UnknownDataError do example.statewide_testing.proficient_by_race_or_ethnicity(:jack) end
   end
 
   def test_porficient_for_subject_by_grade_in_year_returns_data
-    assert_equal 0.819, example.proficient_for_subject_by_grade_in_year(:math, 3, 2011)
-    assert_raises UnknownDataError do example.proficient_for_subject_by_grade_in_year(:history, 3, 2011) end
-    assert_raises UnknownDataError do example.proficient_for_subject_by_grade_in_year(:history, 5, 2011) end
+    assert_equal 0.819, example.statewide_testing.proficient_for_subject_by_grade_in_year(:math, 3, 2011)
+    assert_raises UnknownDataError do example.statewide_testing.proficient_for_subject_by_grade_in_year(:history, 3, 2011) end
+    assert_raises UnknownDataError do example.statewide_testing.proficient_for_subject_by_grade_in_year(:history, 5, 2011) end
   end
 
   def test_proficient_for_subject_by_race_in_year_returns_data_specific_to_subject_race_and_year
-    assert_equal 0.826 , example.proficient_for_subject_by_race_in_year(:writing, :asian, 2011)
-    assert_raises UnknownDataError do example.proficient_for_subject_by_race_in_year(:reading, :green, 2011) end
-    assert_raises UnknownDataError do example.proficient_for_subject_by_race_in_year(:history, :black, 2011) end
+    assert_equal 0.826 , example.statewide_testing.proficient_for_subject_by_race_in_year(:writing, :asian, 2011)
+    assert_raises UnknownDataError do example.statewide_testing.proficient_for_subject_by_race_in_year(:reading, :green, 2011) end
+    assert_raises UnknownDataError do example.statewide_testing.proficient_for_subject_by_race_in_year(:history, :black, 2011) end
   end
 
   def test_proficient_for_subject_in_year
-    assert_equal 0.680, example.proficient_for_subject_in_year(:math, 2011)
-    assert_equal 0.689, example.proficient_for_subject_in_year(:math, 2012)
+    assert_equal 0.680, example.statewide_testing.proficient_for_subject_in_year(:math, 2011)
+    assert_equal 0.689, example.statewide_testing.proficient_for_subject_in_year(:math, 2012)
   end
 end
