@@ -2,11 +2,6 @@ require_relative '../lib/statewide_testing'
 require_relative 'test_helper'
 
 class StatewideTestingTest < TestHelper
-
-  def dr
-    dr ||= DistrictRepository.from_csv("./data")
-  end
-
   def test_proficient_by_grade_returns_formatted_hash_for_given_grade
     result = {2008=>{:math=>0.857, :reading=>0.866, :writing=>0.671},
               2009=>{:math=>0.824, :reading=>0.862, :writing=>0.706},
